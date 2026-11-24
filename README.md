@@ -100,11 +100,14 @@ between synthetic and real assignment validation.
 
 ## Screenshots
 
-These genuine UI captures use synthetic box STEP files and demonstrate the
-workflow only; they are not results on the assignment assembly.
+These genuine UI captures show both the synthetic workflow and the real
+assignment-file run. See [the validation record](docs/VALIDATION.md) for the
+inputs, selected faces, actual candidate list, and limitations.
 
 - [Source-face selection and 3D highlight](screenshots/synthetic-match.png)
 - [Synthetic candidate-match results](screenshots/synthetic-match-results.png)
+- [Real assignment run and selected candidate](screenshots/real-assignment-results.png)
+- [All three real candidate groups](screenshots/real-assignment-candidates.png)
 
 ## Known limitations
 

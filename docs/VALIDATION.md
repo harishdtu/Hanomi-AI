@@ -7,11 +7,12 @@
   `pyproject.toml`.
 - Test data: synthetic STEP fixtures generated at test runtime with
   OpenCascade. Fixture files are temporary and are not included in the repo.
-- Real assignment data: **not validated**. The Notion assignment lists the
-  `WM290V_RedrawStart.stp` assembly, but it could not be retrieved into the
-  workspace; no source-part STEP was available. Synthetic results must not be
-  interpreted as evidence that the WM290 lathe assembly or source key part has
-  been matched correctly.
+- Real assignment data: the assembly
+  `C:\Users\pavan\Downloads\WM290V_RedrawStart.stp` and an extracted key source
+  solid were available for a real-input CLI and Streamlit run. The extracted
+  source is the actual `Key.1` solid in the assembly, written to a separate
+  STEP file for the source input. This is a real-geometry integration check,
+  not an independent ground-truth evaluation.
 
 ## Automated cases
 
@@ -51,11 +52,50 @@
 | CLI help (`python -m auto_mating.cli --help`) | Passed | CLI argument parser |
 | CLI end-to-end JSON output | Passed in automated test | Synthetic STEP files |
 | Streamlit upload, inspect, select faces, match, and highlight | Passed | Synthetic STEP files; screenshots in `screenshots/` |
-| WM290 assignment assembly/source-part matching | Not run | Assembly unavailable locally; source-part STEP unavailable |
+| Complete project test suite after real-data run | 25 passed | Synthetic/unit tests; `python -m pytest -q` |
+| Real assignment CLI run | 3 candidate groups; `search_truncated=false` | Actual WM290 assembly and actual extracted `Key.1` solid; source faces 2, 4, 16, 18; excluded `Part 040`; tolerance 0.05 |
+| Real assignment Streamlit run | 3 candidate groups; matches agree with CLI | Same actual source and assembly; uploaded, inspected, selected faces, excluded source, ran search, and inspected the results table/viewer |
+
+## Real assignment run
+
+The source was identified in the XCAF assembly as:
+
+`01. Test00 / TOS Svitavy 125.1 / Assem1.1 / Key.1`
+
+Its selected face IDs **2, 4, 16, 18** are the four planar square-drive sides,
+identified from the extracted model using this project's one-based OpenCascade
+face traversal. They were not inferred from the illustration.
+
+The CLI and Streamlit each returned the following three candidate groups:
+
+| Component | Instance | Matched face IDs | Score | Fit behavior | Fit gap | Fit confidence |
+|---|---|---|---:|---|---:|---:|
+| Part 029 | TOS Svitavy 125.1 / Solid 22 (Pinion M1.8 10T.3) | 4, 6, 8, 12 | 0.117528 | clearance | 0.4 | 0.87 |
+| Part 027 | TOS Svitavy 125.1 / Solid 20 (Pinion M1.8 10T.1) | 4, 6, 8, 12 | 0.117528 | clearance | 0.4 | 0.87 |
+| Part 028 | TOS Svitavy 125.1 / Solid 21 (Pinion M1.8 10T.2) | 4, 6, 8, 12 | 0.117528 | clearance | 0.4 | 0.87 |
+
+The reported 0.4 gap is the matcher estimate in STEP model units; it is not a
+Boolean contact or interference measurement. The assignment illustration shows
+three highlighted locations, consistent with the number of candidate groups,
+but is not a machine-readable list of expected matches. Therefore this run
+confirms that the real files were processed and documents the returned
+candidates; it does not establish a complete precision/recall score or prove
+that there are no false positives or missed matches. The UI also reported that
+4,699 assembly faces use tessellated non-analytic matching, which warrants
+manual review.
+
+Genuine screenshots from the real-input Streamlit session:
+
+- [Real assignment run and selected candidate](../screenshots/real-assignment-results.png)
+- [All three real candidate groups](../screenshots/real-assignment-candidates.png)
+
+The STEP inputs and CLI JSON output were kept outside the repository. The
+assembly is at the local path above; the extracted source and CLI result JSON
+were saved in the temporary `hanomi-assembly-inventory` directory.
 
 ## Interpretation
 
-Passing synthetic tests verifies only the listed generated cases. The suite
-does not quantify false-positive rates, establish calibrated confidence, or
-prove compatibility with the actual assignment files. The final validation
-rows will be updated only with commands actually run against the final code.
+Passing synthetic tests verifies only the listed generated cases. The real
+assignment run confirms actual-file processing and the recorded three
+candidates, but does not quantify false-positive rates, establish calibrated
+confidence, or prove that every expected mating instance was found.
