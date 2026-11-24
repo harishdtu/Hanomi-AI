@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auto-mating"
+version = "0.1.0"
+description = "Rigid-motion-invariant search for mating faces in STEP assemblies"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "cadquery-ocp>=7.7.2,<8",
+  "numpy>=1.26",
+  "plotly>=5.24",
+  "streamlit>=1.50,<1.55",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+auto-mating = "auto_mating.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
